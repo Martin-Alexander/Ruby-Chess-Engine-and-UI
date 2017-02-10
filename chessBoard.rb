@@ -42,11 +42,9 @@ class Board
     standardSquares = [11, 21, 31, 41, 51, 61, 71, 81, 12, 22, 32, 42, 52, 62, 72, 82, 17, 27, 37, 47, 57, 67, 77, 87, 18, 28, 38, 48, 58, 68, 78, 88]
     standardPieces =  [140, 120, 130, 150, 160, 130, 120, 140, 110, 110, 110, 110, 110, 110, 110, 110, 210, 210, 210, 210, 210, 210, 210, 210, 240, 220, 230, 250, 260, 230, 220, 240]
 
-    # Class variables for player turn as awell as available moves — which is an 
-    # array of moves that are legal for the turnplayer to play. 
+    # Class variables for player turn
 
     @white_to_play = playerTurn
-    @availableMoves = []
 
     # The assembler that creates a 64-length hash with keys that correspond to 
     # boardsquares and values that correspond to piecedata (which contains 
@@ -88,6 +86,7 @@ class Board
     end
     
     @kingSafetyBoard = Hash.new
+
     initial_list_constructor
     final_list_constructor
   end
@@ -241,14 +240,6 @@ class Board
           end                                                                                                   
         end
     end
-  end
-
-  def whiteMove
-    return @white_to_play
-  end
-
-  def availableMoves
-    return @availableMoves
   end
 
   def finalList
