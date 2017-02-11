@@ -1,17 +1,17 @@
 =begin
-	The "Board" Class:
+  The "Board" Class:
 
-	* Takes two arguments: board data and player turn. Board data is the layout
-	of the board — the default argument is "std" which is the normal starting 
-	position of a chess board. The player turn is simply whether or not it is
-	white's turn to move. 
+  * Takes two arguments: board data and player turn. Board data is the layout
+  of the board — the default argument is "std" which is the normal starting 
+  position of a chess board. The player turn is simply whether or not it is
+  white's turn to move. 
 
-	* Stores and updates board and player turn data
+  * Stores and updates board and player turn data
 
-	* Upon initialization a hash of board data and fills it with pieces based
-	on a pre-set list (i.e., the normal starting positions of a chess board). It
-	at sets the player turn counter to white. And finally, it creates a list of
-	available moves. 
+  * Upon initialization a hash of board data and fills it with pieces based
+  on a pre-set list (i.e., the normal starting positions of a chess board). It
+  at sets the player turn counter to white. And finally, it creates a list of
+  available moves. 
 
 
 =end
@@ -22,12 +22,12 @@ class Board
   
   def initialize(layout="std", playerTurn=true)
 
-  	# Equal length arrays of board squares and pieces to guide board construction. 
-  	# Every board created will have the usual 64 squares. The first array tells the
-  	# assemble which board squares will recieve a piece (as oppsed to being empty)
-  	# and the second arrays gives the pieces to place in that square. 
+    # Equal length arrays of board squares and pieces to guide board construction. 
+    # Every board created will have the usual 64 squares. The first array tells the
+    # assemble which board squares will recieve a piece (as oppsed to being empty)
+    # and the second arrays gives the pieces to place in that square. 
 
-  	# A testing environment based on the Immoratal Game
+    # A testing environment based on the Immoratal Game
 
     immortalSquares = [18, 28, 38, 58, 68, 78, 88, 17, 37, 47, 67, 77, 87, 25, 64, 84, 34, 54, 12, 26, 32, 42, 72, 82, 11, 21, 31, 41, 61, 71, 81] 
     immortalPieces =  [240, 220, 230, 260, 230, 220, 240, 210, 210, 210, 210, 210, 210, 211, 211, 250, 130, 111, 110, 110, 110, 110, 110, 110, 140, 120, 130, 150, 160, 120, 140]
@@ -90,14 +90,20 @@ class Board
 
   end
 
+  # Function that well called returns a copy of the board's game data
+
   def data
     dataCopy = @data.dup
     return dataCopy
   end
 
+  # Returns a boolean variable on whether or not it's white's turnt to play
+
   def playerTurn
     return @white_to_play
   end
+
+  # Returns that list of all legal moves available to the turnplayer
 
   def finalList
     return @final_list
@@ -107,7 +113,7 @@ class Board
 
   def printBoard
 
-  	# Creating an 64-length hash with keys corresponding to board squares and values of 0
+    # Creating an 64-length hash with keys corresponding to board squares and values of 0
 
     overlay = Hash.new
     for i in 1..8
@@ -167,6 +173,13 @@ class Board
     puts("       A   B   C   D   E   F   G   H")
     puts("")
   end
+
+  # Incredibly abstract
+  # Give it a boardposition, a board, and an array to store the output and it will 
+  # store in that output array all moves that that piece can make in that given 
+  # board WITHOUT considering whether or the moves are putting their own king in
+  # check
+  # A variety of strategies are used for different piece types. 
 
   def pieceMoves(position, board, output)
     piece = board[position]
@@ -248,7 +261,7 @@ class Board
           end                                                                                    
         else                                                                                                 
           kingMoves.each do |i|            
-          	if pieceType(board[position + i]) == "empty" || player(board[position + i]) == "white"  
+            if pieceType(board[position + i]) == "empty" || player(board[position + i]) == "white"  
               output.push(position + i + (position * 1000))
             end
           end                                                                                                   
@@ -256,8 +269,21 @@ class Board
     end
   end
 
+  # Producing an array of legal moves for a given board (and player turn) two functions
+  # are used. The first function creats an array (stored in the class variables 
+  # "availableMove") that contains all moves that can be made by the turn player's 
+  # pieces that are legal without regard to king safety. 
+
   def initial_list_constructor
+
+    # Class variable that will be used by the final_list_constructor function
+
     @availableMoves = []
+
+    # For each square in the board that is occupied by a trunplayer piece run the 
+    # pieceMoves function and store the results in the availableMoves class
+    # variable
+
     if @white_to_play
       @data.each do |i, j|
         if player(@data[i]) == "white" then pieceMoves(i, @data, @availableMoves) end
@@ -269,27 +295,72 @@ class Board
     end
   end
 
+  # The final_list_constructor will take all "available" moves and determine
+  # if whether or not they preserve the imediate safety of the king. If they 
+  # do no (and so would be "putting yourself in check") then they are excluded 
+  # from the final list of available moves (i.e., finalList).
+
   def final_list_constructor
+
+    # the final_list class variable is an array of all legal moves for the
+    # current board and turnplayer. 
+
     @final_list = []
+
+    # kingSafetyBoard is a temporary hashboard that will be used to test
+    # whether or not a given move from availableMoves will constitute
+    # the turnplayer putting himseld in check. 
+
     kingSafetyBoard = Hash.new
+
+    # A loop for each element in availableMoves
+
     @availableMoves.each do |i|
+
+      # kingSafetyBoard is made into a copy of the current board
+
       @data.each { |j, k| kingSafetyBoard[j] = k }
-      @output = []
-      kingLocation = 0
+
+      # An empty tempory array "output" is created
+      # The move in availableMove is applied to the temporary test board
+
+      output = []
       movePiece(i, kingSafetyBoard)
 
       if @white_to_play
+
+        # For each square in the kingsafety board (after the move has been applied)
+        # the loop looks for the square with the turnplayer's kind and stores that
+        # square in the kingLocation variables
+
         kingSafetyBoard.each do |l, m|
           if pieceType(kingSafetyBoard[l]) == "king" && player(kingSafetyBoard[l]) == "white"  
             kingLocation = l
             break
           end
         end
+
+        # For each square in the kingsafety board (after the move has been applied)
+        # the loop looks for the squares with turnplayer's oppenent's pieces and 
+        # runs the pieceMoves function to find their available moves and store all 
+        # those moves in the output variable. 
+
         kingSafetyBoard.each do |l, m|
-          if player(kingSafetyBoard[l]) == "black" then pieceMoves(l, kingSafetyBoard, @output) end
+          if player(kingSafetyBoard[l]) == "black" then pieceMoves(l, kingSafetyBoard, output) end
         end
-        @output.map! { |n| n - ((n/100) * 100) }
-        unless @output.include? kingLocation then @final_list.push(i) end
+
+        # I forget what this ↓ does, but it's some kind of formatting 
+
+        output.map! { |n| n - ((n/100) * 100) }
+
+        # If none of the elements of the output array are the square that the 
+        # turnplayer's king is located then the original move from availableMoves
+        # is added to final_list. 
+
+        unless output.include? kingLocation then @final_list.push(i) end
+
+        # This is for when the turnplayer is black
+          
       else
         kingSafetyBoard.each do |l, m|
           if pieceType(kingSafetyBoard[l]) == "king" && player(kingSafetyBoard[l]) == "black"  
@@ -298,10 +369,10 @@ class Board
           end
         end
         kingSafetyBoard.each do |l, m|
-          if player(kingSafetyBoard[l]) == "white" then pieceMoves(l, kingSafetyBoard, @output) end
+          if player(kingSafetyBoard[l]) == "white" then pieceMoves(l, kingSafetyBoard, output) end
         end
-        @output.map! { |n| n - (n/100) * 100 }
-        unless @output.include? kingLocation then @final_list.push(i) end
+        output.map! { |n| n - (n/100) * 100 }
+        unless output.include? kingLocation then @final_list.push(i) end
       end
     end
   end
@@ -326,13 +397,13 @@ class Board
 
   def move(move)
 
-	# First, it checks whether or not the move it has recieved is found 
-  	# in the board's array of valid moves (i.e., Board.finalList).
+  # First, it checks whether or not the move it has recieved is found 
+    # in the board's array of valid moves (i.e., Board.finalList).
 
     if finalList.include? move
 
       # Second, it uses the movePiece function to manipulate the board
-	  # according to the validated move. 
+    # according to the validated move. 
 
       movePiece(move, @data)
 
@@ -397,8 +468,28 @@ class Board
     end
   end
 
+  # Function that calculates the balence of material on the board. White
+  # material is added while black material is subtracted such that if the
+  # sum is positive then the balence of material belongs to white and if 
+  # the sum is negative then the balence of material belongs to black. 
+  # The function is player turn independent and so when it is used by the
+  # engine it must take into consideration which colour the computer is
+  # playing as. 
+
+  # TO DO: include checkmate as part of the evaluation such that if white
+  # is in check mate then the function returns -999 and if black is in 
+  # checkmate then the function returns 999. 
+
   def evaluate_board
+
+    # The evaluation variable is what is finally outputted and it is
+    # initially set to zero. 
+
     evaluation = 0
+
+    # The function cycles across each boardsquare and performs that 
+    # appropriate arithmetic. 
+
     @data.each do |i, j|
       case pieceType(j)
         when "pawn"
@@ -433,9 +524,14 @@ class Board
           end
       end
     end
+
+    # Final evaluation is outputted
+
     return evaluation
   end
   
+  # When passed a piece it returns a string description of its colour
+
   def player(piece)
    if piece == nil
      return("NaS")
@@ -447,6 +543,8 @@ class Board
      return("empty")
    end  
   end
+
+  # When passed a piece it returns a string description of its type
 
   def pieceType(piece)
     if piece == nil
@@ -464,6 +562,8 @@ class Board
     end
   end
 
+  # When passed a piece it returns a string description of its special status
+
   def specialStatus(piece)
     case (piece - ((piece / 10) * 10))
       when 0 then return("none")
@@ -471,6 +571,8 @@ class Board
       when 2 then return("en passent")
     end
   end
+
+  # V. abstract. Used by the pieceMoves function. 
 
   def movingAlong(a, b, c, d, e)
     for i in 1..(a) 

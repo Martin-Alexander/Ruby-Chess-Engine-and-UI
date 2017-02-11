@@ -90,14 +90,20 @@ class Board
 
   end
 
+  # Function that well called returns a copy of the board's game data
+
   def data
     dataCopy = @data.dup
     return dataCopy
   end
 
+  # Returns a boolean variable on whether or not it's white's turnt to play
+
   def playerTurn
     return @white_to_play
   end
+
+  # Returns that list of all legal moves available to the turnplayer
 
   def finalList
     return @final_list
@@ -167,6 +173,13 @@ class Board
     puts("       A   B   C   D   E   F   G   H")
     puts("")
   end
+
+  # Incredibly abstract
+  # Give it a boardposition, a board, and an array to store the output and it will 
+  # store in that output array all moves that that piece can make in that given 
+  # board WITHOUT considering whether or the moves are putting their own king in
+  # check
+  # A variety of strategies are used for different piece types. 
 
   def pieceMoves(position, board, output)
     piece = board[position]
@@ -256,8 +269,21 @@ class Board
     end
   end
 
+  # Producing an array of legal moves for a given board (and player turn) two functions
+  # are used. The first function creats an array (stored in the class variables 
+  # "availableMove") that contains all moves that can be made by the turn player's 
+  # pieces that are legal without regard to king safety. 
+
   def initial_list_constructor
+
+    # Class variable that will be used by the final_list_constructor function
+
     @availableMoves = []
+
+    # For each square in the board that is occupied by a trunplayer piece run the 
+    # pieceMoves function and store the results in the availableMoves class
+    # variable
+
     if @white_to_play
       @data.each do |i, j|
         if player(@data[i]) == "white" then pieceMoves(i, @data, @availableMoves) end
@@ -269,27 +295,73 @@ class Board
     end
   end
 
-  def final_list_constructor
-    @final_list = []
-    kingSafetyBoard = Hash.new
-    @availableMoves.each do |i|
-      @data.each { |j, k| kingSafetyBoard[j] = k }
-      @output = []
-      kingLocation = 0
-      movePiece(i, kingSafetyBoard)
+  # The final_list_constructor will take all "available" moves and determine
+  # if whether or not they preserve the imediate safety of the king. If they 
+  # do no (and so would be "putting yourself in check") then they are excluded 
+  # from the final list of available moves (i.e., finalList).
 
+  def final_list_constructor
+
+    # the final_list class variable is an array of all legal moves for the
+    # current board and turnplayer. 
+
+    @final_list = []
+
+    # kingSafetyBoard is a temporary hashboard that will be used to test
+    # whether or not a given move from availableMoves will constitute
+    # the turnplayer putting himseld in check. 
+
+    kingSafetyBoard = Hash.new
+
+    # A loop for each element in availableMoves
+
+    @availableMoves.each do |i|
+
+      # kingSafetyBoard is made into a copy of the current board
+
+      @data.each { |j, k| kingSafetyBoard[j] = k }
+
+      # An empty tempory array "output" is created
+      # The move in availableMove is applied to the temporary test board
+
+      output = []
+      movePiece(i, kingSafetyBoard)
+      kingLocation = 0
+      
       if @white_to_play
+
+        # For each square in the kingsafety board (after the move has been applied)
+        # the loop looks for the square with the turnplayer's kind and stores that
+        # square in the kingLocation variables
+
         kingSafetyBoard.each do |l, m|
           if pieceType(kingSafetyBoard[l]) == "king" && player(kingSafetyBoard[l]) == "white"  
             kingLocation = l
             break
           end
         end
+
+        # For each square in the kingsafety board (after the move has been applied)
+        # the loop looks for the squares with turnplayer's oppenent's pieces and 
+        # runs the pieceMoves function to find their available moves and store all 
+        # those moves in the output variable. 
+
         kingSafetyBoard.each do |l, m|
-          if player(kingSafetyBoard[l]) == "black" then pieceMoves(l, kingSafetyBoard, @output) end
+          if player(kingSafetyBoard[l]) == "black" then pieceMoves(l, kingSafetyBoard, output) end
         end
-        @output.map! { |n| n - ((n/100) * 100) }
-        unless @output.include? kingLocation then @final_list.push(i) end
+
+        # I forget what this ↓ does, but it's some kind of formatting 
+
+        output.map! { |n| n - ((n/100) * 100) }
+
+        # If none of the elements of the output array are the square that the 
+        # turnplayer's king is located then the original move from availableMoves
+        # is added to final_list. 
+
+        unless output.include? kingLocation then @final_list.push(i) end
+
+        # This is for when the turnplayer is black
+          
       else
         kingSafetyBoard.each do |l, m|
           if pieceType(kingSafetyBoard[l]) == "king" && player(kingSafetyBoard[l]) == "black"  
@@ -298,10 +370,10 @@ class Board
           end
         end
         kingSafetyBoard.each do |l, m|
-          if player(kingSafetyBoard[l]) == "white" then pieceMoves(l, kingSafetyBoard, @output) end
+          if player(kingSafetyBoard[l]) == "white" then pieceMoves(l, kingSafetyBoard, output) end
         end
-        @output.map! { |n| n - (n/100) * 100 }
-        unless @output.include? kingLocation then @final_list.push(i) end
+        output.map! { |n| n - (n/100) * 100 }
+        unless output.include? kingLocation then @final_list.push(i) end
       end
     end
   end
@@ -397,8 +469,28 @@ class Board
     end
   end
 
+  # Function that calculates the balence of material on the board. White
+  # material is added while black material is subtracted such that if the
+  # sum is positive then the balence of material belongs to white and if 
+  # the sum is negative then the balence of material belongs to black. 
+  # The function is player turn independent and so when it is used by the
+  # engine it must take into consideration which colour the computer is
+  # playing as. 
+
+  # TO DO: include checkmate as part of the evaluation such that if white
+  # is in check mate then the function returns -999 and if black is in 
+  # checkmate then the function returns 999. 
+
   def evaluate_board
+
+    # The evaluation variable is what is finally outputted and it is
+    # initially set to zero. 
+
     evaluation = 0
+
+    # The function cycles across each boardsquare and performs that 
+    # appropriate arithmetic. 
+
     @data.each do |i, j|
       case pieceType(j)
         when "pawn"
@@ -433,9 +525,14 @@ class Board
           end
       end
     end
+
+    # Final evaluation is outputted
+
     return evaluation
   end
   
+  # When passed a piece it returns a string description of its colour
+
   def player(piece)
    if piece == nil
      return("NaS")
@@ -447,6 +544,8 @@ class Board
      return("empty")
    end  
   end
+
+  # When passed a piece it returns a string description of its type
 
   def pieceType(piece)
     if piece == nil
@@ -464,6 +563,8 @@ class Board
     end
   end
 
+  # When passed a piece it returns a string description of its special status
+
   def specialStatus(piece)
     case (piece - ((piece / 10) * 10))
       when 0 then return("none")
@@ -471,6 +572,8 @@ class Board
       when 2 then return("en passent")
     end
   end
+
+  # V. abstract. Used by the pieceMoves function. 
 
   def movingAlong(a, b, c, d, e)
     for i in 1..(a) 
@@ -546,4 +649,3 @@ puts "#{tree_evaluator(temp)}"
 gameOne.printBoard
 
 puts "#{gameOne.finalList}"
-
