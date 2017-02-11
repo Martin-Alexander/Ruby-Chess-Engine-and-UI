@@ -84,11 +84,10 @@ class Board
     else
       @data = layout
     end
-    
-    @kingSafetyBoard = Hash.new
 
-    initial_list_constructor
-    final_list_constructor
+    initial_list_constructor()
+    final_list_constructor()
+
   end
 
   def data
@@ -100,32 +99,47 @@ class Board
     return @white_to_play
   end
 
+  def finalList
+    return @final_list
+  end
+
+  # Function to print the chess board to the console. 
+
   def printBoard
 
-    @overlay = Hash.new
+  	# Creating an 64-length hash with keys corresponding to board squares and values of 0
+
+    overlay = Hash.new
     for i in 1..8
       for j in 1..8
-        @overlay[i + j * 10] = 0
+        overlay[i + j * 10] = 0
       end
     end
+
+    # For each key-value pair of the board data hash add a visual piecerepresenter to the 
+    # value of the corresponding key of the board data hash to the new hash. This creates
+    # a chess board with visual representations instead of raw data in each board square. 
 
     @data.each do |k, l|
       case (l / 10)
-        when 0 then @overlay[k] = " "
-        when 11 then @overlay[k] = "p"
-        when 12 then @overlay[k] = "n"
-        when 13 then @overlay[k] = "b"
-        when 14 then @overlay[k] = "r"
-        when 15 then @overlay[k] = "q"
-        when 16 then @overlay[k] = "k"
-        when 21 then @overlay[k] = "P" 
-        when 22 then @overlay[k] = "N"
-        when 23 then @overlay[k] = "B"
-        when 24 then @overlay[k] = "R"
-        when 25 then @overlay[k] = "Q" 
-        when 26 then @overlay[k] = "K" 
+        when 0 then overlay[k] = " "
+        when 11 then overlay[k] = "p"
+        when 12 then overlay[k] = "n"
+        when 13 then overlay[k] = "b"
+        when 14 then overlay[k] = "r"
+        when 15 then overlay[k] = "q"
+        when 16 then overlay[k] = "k"
+        when 21 then overlay[k] = "P" 
+        when 22 then overlay[k] = "N"
+        when 23 then overlay[k] = "B"
+        when 24 then overlay[k] = "R"
+        when 25 then overlay[k] = "Q" 
+        when 26 then overlay[k] = "K" 
       end
     end
+
+    # Imbed the overlay hash data into the frame of board design that'll be printed
+    # to the console
 
     puts("")
     puts("             -- C H E S S --                 ")
@@ -134,28 +148,28 @@ class Board
     puts("")
     puts("       A   B   C   D   E   F   G   H")
     puts("     ---------------------------------")
-    puts("   8 | #{@overlay[18]} | #{@overlay[28]} | #{@overlay[38]} | #{@overlay[48]} | #{@overlay[58]} | #{@overlay[68]} | #{@overlay[78]} | #{@overlay[88]} | 8")
+    puts("   8 | #{overlay[18]} | #{overlay[28]} | #{overlay[38]} | #{overlay[48]} | #{overlay[58]} | #{overlay[68]} | #{overlay[78]} | #{overlay[88]} | 8")
     puts("     ---------------------------------")
-    puts("   7 | #{@overlay[17]} | #{@overlay[27]} | #{@overlay[37]} | #{@overlay[47]} | #{@overlay[57]} | #{@overlay[67]} | #{@overlay[77]} | #{@overlay[87]} | 7")
+    puts("   7 | #{overlay[17]} | #{overlay[27]} | #{overlay[37]} | #{overlay[47]} | #{overlay[57]} | #{overlay[67]} | #{overlay[77]} | #{overlay[87]} | 7")
     puts("     ---------------------------------")
-    puts("   6 | #{@overlay[16]} | #{@overlay[26]} | #{@overlay[36]} | #{@overlay[46]} | #{@overlay[56]} | #{@overlay[66]} | #{@overlay[76]} | #{@overlay[86]} | 6")
+    puts("   6 | #{overlay[16]} | #{overlay[26]} | #{overlay[36]} | #{overlay[46]} | #{overlay[56]} | #{overlay[66]} | #{overlay[76]} | #{overlay[86]} | 6")
     puts("     ---------------------------------")
-    puts("   5 | #{@overlay[15]} | #{@overlay[25]} | #{@overlay[35]} | #{@overlay[45]} | #{@overlay[55]} | #{@overlay[65]} | #{@overlay[75]} | #{@overlay[85]} | 5")
+    puts("   5 | #{overlay[15]} | #{overlay[25]} | #{overlay[35]} | #{overlay[45]} | #{overlay[55]} | #{overlay[65]} | #{overlay[75]} | #{overlay[85]} | 5")
     puts("     ---------------------------------")
-    puts("   4 | #{@overlay[14]} | #{@overlay[24]} | #{@overlay[34]} | #{@overlay[44]} | #{@overlay[54]} | #{@overlay[64]} | #{@overlay[74]} | #{@overlay[84]} | 4")
+    puts("   4 | #{overlay[14]} | #{overlay[24]} | #{overlay[34]} | #{overlay[44]} | #{overlay[54]} | #{overlay[64]} | #{overlay[74]} | #{overlay[84]} | 4")
     puts("     ---------------------------------")
-    puts("   3 | #{@overlay[13]} | #{@overlay[23]} | #{@overlay[33]} | #{@overlay[43]} | #{@overlay[53]} | #{@overlay[63]} | #{@overlay[73]} | #{@overlay[83]} | 3")
+    puts("   3 | #{overlay[13]} | #{overlay[23]} | #{overlay[33]} | #{overlay[43]} | #{overlay[53]} | #{overlay[63]} | #{overlay[73]} | #{overlay[83]} | 3")
     puts("     ---------------------------------")
-    puts("   2 | #{@overlay[12]} | #{@overlay[22]} | #{@overlay[32]} | #{@overlay[42]} | #{@overlay[52]} | #{@overlay[62]} | #{@overlay[72]} | #{@overlay[82]} | 2")
+    puts("   2 | #{overlay[12]} | #{overlay[22]} | #{overlay[32]} | #{overlay[42]} | #{overlay[52]} | #{overlay[62]} | #{overlay[72]} | #{overlay[82]} | 2")
     puts("     ---------------------------------")
-    puts("   1 | #{@overlay[11]} | #{@overlay[21]} | #{@overlay[31]} | #{@overlay[41]} | #{@overlay[51]} | #{@overlay[61]} | #{@overlay[71]} | #{@overlay[81]} | 1")
+    puts("   1 | #{overlay[11]} | #{overlay[21]} | #{overlay[31]} | #{overlay[41]} | #{overlay[51]} | #{overlay[61]} | #{overlay[71]} | #{overlay[81]} | 1")
     puts("     ---------------------------------")
     puts("       A   B   C   D   E   F   G   H")
     puts("")
   end
 
   def pieceMoves(position, board, output)
-    piece = board[position]                                                                                    # variable "piece" is taken to be whatever is in the postion entered into the function
+    piece = board[position]
     case pieceType(piece) 
 
       when "pawn"
@@ -224,7 +238,7 @@ class Board
       when "king"
         kingMoves = [1, 11, 10, 9, -1, -11, -10, -9]
         if player(piece) == "white"                                                                                                   
-          kingMoves.each do |i|                                                                                                                    # for each of the eight king moves determine if available
+          kingMoves.each do |i|
             if pieceType(board[position + i]) == "empty" || player(board[position + i]) == "black"  
               output.push(position + i + (position * 1000))
             end
@@ -233,17 +247,13 @@ class Board
 
           end                                                                                    
         else                                                                                                 
-          kingMoves.each do |i|                                                                                                                    # for each of the eight king moves determine if available
-            if pieceType(board[position + i]) == "empty" || player(board[position + i]) == "white"  
+          kingMoves.each do |i|            
+          	if pieceType(board[position + i]) == "empty" || player(board[position + i]) == "white"  
               output.push(position + i + (position * 1000))
             end
           end                                                                                                   
         end
     end
-  end
-
-  def finalList
-    return @final_list
   end
 
   def initial_list_constructor
@@ -261,33 +271,34 @@ class Board
 
   def final_list_constructor
     @final_list = []
+    kingSafetyBoard = Hash.new
     @availableMoves.each do |i|
-      @data.each { |j, k| @kingSafetyBoard[j] = k }
+      @data.each { |j, k| kingSafetyBoard[j] = k }
       @output = []
       kingLocation = 0
-      movePiece(i, @kingSafetyBoard)
+      movePiece(i, kingSafetyBoard)
 
       if @white_to_play
-        @kingSafetyBoard.each do |l, m|
-          if pieceType(@kingSafetyBoard[l]) == "king" && player(@kingSafetyBoard[l]) == "white"  
+        kingSafetyBoard.each do |l, m|
+          if pieceType(kingSafetyBoard[l]) == "king" && player(kingSafetyBoard[l]) == "white"  
             kingLocation = l
             break
           end
         end
-        @kingSafetyBoard.each do |l, m|
-          if player(@kingSafetyBoard[l]) == "black" then pieceMoves(l, @kingSafetyBoard, @output) end
+        kingSafetyBoard.each do |l, m|
+          if player(kingSafetyBoard[l]) == "black" then pieceMoves(l, kingSafetyBoard, @output) end
         end
         @output.map! { |n| n - ((n/100) * 100) }
         unless @output.include? kingLocation then @final_list.push(i) end
       else
-        @kingSafetyBoard.each do |l, m|
-          if pieceType(@kingSafetyBoard[l]) == "king" && player(@kingSafetyBoard[l]) == "black"  
+        kingSafetyBoard.each do |l, m|
+          if pieceType(kingSafetyBoard[l]) == "king" && player(kingSafetyBoard[l]) == "black"  
             kingLocation = l
             break
           end
         end
-        @kingSafetyBoard.each do |l, m|
-          if player(@kingSafetyBoard[l]) == "white" then pieceMoves(l, @kingSafetyBoard, @output) end
+        kingSafetyBoard.each do |l, m|
+          if player(kingSafetyBoard[l]) == "white" then pieceMoves(l, kingSafetyBoard, @output) end
         end
         @output.map! { |n| n - (n/100) * 100 }
         unless @output.include? kingLocation then @final_list.push(i) end
@@ -295,14 +306,39 @@ class Board
     end
   end
 
+  # Basic board editting function that simply moves a piece from one square
+  # to another leaving behind an empty square and removing whatever is in
+  # the destination square. Is soley used by the movePiece function after
+  # it has been determined that the move is legal. 
+
   def movePiece(move, board)
     board[move - ((move/100) * 100)] = board[move/1000]
     board[move/1000] = 0
   end  
 
+  # A function that preforms various board manipulation related to the 
+  # successful execution of a move, including piece movement, special
+  # status updating, pawn promotion, player turn update (white to black
+  # and black to white), and the creation of a new list of available
+  # moves (i.e., finalList) for the new board. 
+
+  # 
+
   def move(move)
+
+	# First, it checks whether or not the move it has recieved is found 
+  	# in the board's array of valid moves (i.e., Board.finalList).
+
     if finalList.include? move
+
+      # Second, it uses the movePiece function to manipulate the board
+	  # according to the validated move. 
+
       movePiece(move, @data)
+
+      # Third, if the raw move data contains a promotion command then
+      # edit the board data accordingly. 
+
       if move - ((move/1000) * 1000) > 99
         case ((move - ((move/1000) * 1000)) / 100) * 100
           when 100
@@ -331,13 +367,32 @@ class Board
             end             
           end
       end
+
+      # Fouth, if the move involves a pawn, rook, or king edit the board 
+      # such that the piece has its special status updated (if it has not
+      # already been marked as having moved).
+
       if (pieceType(@data[move - ((move/100) * 100)]) == "pawn" || pieceType(@data[move - ((move/100) * 100)]) == "king" || pieceType(@data[move - ((move/100) * 100)]) == "rook") && specialStatus(@data[move - ((move/100) * 100)]) == "none" 
         @data[move - ((move/100) * 100)] = @data[move - ((move/100) * 100)] + 1
       end
+
+      # Fifth, roll over the player turn counter such that if it was
+      # white to play it becomes black to play and if it was black to
+      # play it becomes white to play.
+
       @white_to_play = !@white_to_play
+
+      # And finally, after all the necessary updates to the board
+      # data have been made construct a new list of available moves
+      # (i.e., finalList) for the next time the move function is called. 
+
       initial_list_constructor
       final_list_constructor
     else
+
+      # If the move passed to this function is not in list of available
+      # moves then return the number 0. 
+
       return(0)
     end
   end
@@ -380,8 +435,6 @@ class Board
     end
     return evaluation
   end
-
-  private
   
   def player(piece)
    if piece == nil
