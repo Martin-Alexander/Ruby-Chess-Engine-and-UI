@@ -1,3 +1,5 @@
+require './chessBoard'
+
 def deep_thought (thoughtsBool)
   tree = []
   thoughts = []

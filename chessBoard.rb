@@ -326,6 +326,7 @@ class Board
 
       output = []
       movePiece(i, kingSafetyBoard)
+      kingLocation =0 
 
       if @white_to_play
 
@@ -586,5 +587,4 @@ class Board
       end
     end 
   end
-
 end
