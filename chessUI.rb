@@ -8,7 +8,7 @@ while true
 	# Main menu loop
 
 	while true
-
+		puts("\e[H\e[2J")
 		puts("\e[1\e[1H")
 		puts("2 players [2]")
 		puts("instructions [3]")
@@ -42,18 +42,27 @@ while true
 		when "2"
 
 			mainBoard = Board.new("std", true)
+			mainBoard.printBoard
 
 			while true
-				
-			puts("\e[H\e[2J")			
-			mainBoard.printBoard 
 
-			puts("Move")
-			move1 = gets.chomp
-			move1 = move1.to_i
-			mainBoard.move(move1)
-			mainBoard.printBoard 
+				if mainBoard.gameOver
+					if mainBoard.inCheck
+						puts("Checkmate")
+					else
+						puts("Stalemate")
+					end
+					STDIN.getch 
+					break
+				else
+					puts("Move")
+					userMove = gets.chomp
 
+					mainBoard.move(userMove.to_i)
+
+					puts("\e[H\e[2J")		
+					mainBoard.printBoard 
+				end
 			end
 
 	end
