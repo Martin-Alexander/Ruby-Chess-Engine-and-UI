@@ -37,6 +37,11 @@ class Board
     testSquares = [28, 17, 16, 26, 36, 15, 65, 14, 24, 34, 44]
     testPieces = [250, 261, 211, 211, 211, 111, 241, 161, 111, 111, 120]
 
+    # A testing environment designed to test endofgame detection
+
+    endofgameSquares = [48, 47, 26, 55]
+    endofgamePieces = [261, 111, 161, 150]
+
     # The standard board set up for chess
 
     standardSquares = [11, 21, 31, 41, 51, 61, 71, 81, 12, 22, 32, 42, 52, 62, 72, 82, 17, 27, 37, 47, 57, 67, 77, 87, 18, 28, 38, 48, 58, 68, 78, 88]
@@ -75,8 +80,8 @@ class Board
 
     # This is where a pre-set layout is loaded into the assembler
 
-    placementSquares = testSquares
-    placementPieces = testPieces
+    placementSquares = endofgameSquares
+    placementPieces = endofgamePieces
 
       for i in 0..(placementSquares.length - 1)
         @data[placementSquares[i]] = placementPieces[i]
@@ -109,6 +114,75 @@ class Board
     return @final_list
   end
 
+  def gameOver
+    if @final_list.length == 0
+      return(true)
+    end
+  end
+
+  def inCheck
+
+    inCheckBoard = @data.dup
+    kingLocation = 0
+    check = false
+
+    if @white_to_play
+
+      # Finds the king's location
+
+      inCheckBoard.each do |i, j|
+        if pieceType(inCheckBoard[i]) == "king" && player(inCheckBoard[i]) == "white"
+          kingLocation = i
+          break
+        end
+      end
+
+      # Determines if any enemy piece can take it
+
+      inCheckBoard.each do |i, j|
+        if player(inCheckBoard[i]) == "black"
+          output = []
+          pieceMoves(i, inCheckBoard, output)
+          output.map! { |n| n - ((n/100) * 100) }            
+          if output.include? kingLocation 
+            check = true
+            break
+          end
+        end
+      end
+      if check
+        return(true)
+      else
+        return(false)
+      end
+    else  
+
+      inCheckBoard.each do |i, j|
+        if pieceType(inCheckBoard[i]) == "king" && player(inCheckBoard[i]) == "black"
+          kingLocation = i
+          break
+        end
+      end
+
+      inCheckBoard.each do |i, j|
+        if player(inCheckBoard[i]) == "white"
+          output = []
+          pieceMoves(i, inCheckBoard, output)
+          output.map! { |n| n - ((n/100) * 100) }            
+          if output.include? kingLocation 
+            check = true
+            break
+          end
+        end
+      end
+      if check
+        return(true)
+      else
+        return(false)
+      end
+    end
+  end
+
   # Function to print the chess board to the console. 
 
   def printBoard
@@ -129,18 +203,18 @@ class Board
     @data.each do |k, l|
       case (l / 10)
         when 0 then overlay[k] = " "
-        when 11 then overlay[k] = "p"
-        when 12 then overlay[k] = "n"
-        when 13 then overlay[k] = "b"
-        when 14 then overlay[k] = "r"
-        when 15 then overlay[k] = "q"
-        when 16 then overlay[k] = "k"
-        when 21 then overlay[k] = "P" 
-        when 22 then overlay[k] = "N"
-        when 23 then overlay[k] = "B"
-        when 24 then overlay[k] = "R"
-        when 25 then overlay[k] = "Q" 
-        when 26 then overlay[k] = "K" 
+        when 21 then overlay[k] = "p"
+        when 22 then overlay[k] = "n"
+        when 23 then overlay[k] = "b"
+        when 24 then overlay[k] = "r"
+        when 25 then overlay[k] = "q"
+        when 26 then overlay[k] = "k"
+        when 11 then overlay[k] = "P" 
+        when 12 then overlay[k] = "N"
+        when 13 then overlay[k] = "B"
+        when 14 then overlay[k] = "R"
+        when 15 then overlay[k] = "Q" 
+        when 16 then overlay[k] = "K" 
       end
     end
 
