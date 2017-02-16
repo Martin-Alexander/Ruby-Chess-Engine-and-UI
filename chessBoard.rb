@@ -80,8 +80,8 @@ class Board
 
     # This is where a pre-set layout is loaded into the assembler
 
-    placementSquares = endofgameSquares
-    placementPieces = endofgamePieces
+    placementSquares = standardSquares
+    placementPieces = standardPieces
 
       for i in 0..(placementSquares.length - 1)
         @data[placementSquares[i]] = placementPieces[i]
@@ -220,11 +220,10 @@ class Board
 
     # Imbed the overlay hash data into the frame of board design that'll be printed
     # to the console
-
+    puts("\e[H\e[2J")
     puts("")
-    puts("             -- C H E S S --                 ")
+    puts("               -- C H E S S --                 ")
     puts("")
-    puts("     Turn: ")
     puts("")
     puts("       A   B   C   D   E   F   G   H")
     puts("     ---------------------------------")
