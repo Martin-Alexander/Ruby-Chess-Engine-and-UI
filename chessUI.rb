@@ -1,4 +1,5 @@
 require './chessBoard'
+require './chessEngine'
 require 'io/console'   
 
 def isValidSyntax(move)
@@ -58,6 +59,7 @@ while true
 	while true
 		puts("\e[H\e[2J")
 		puts("\e[1\e[1H")
+		puts("1 players [1]")
 		puts("2 players [2]")
 		puts("instructions [3]")
 		puts("exit [4]")
@@ -66,7 +68,7 @@ while true
 
 		puts("\e[H\e[2J")
 
-		if (menuInput == "2" || menuInput == "3" || menuInput == "4")
+		if (menuInput == "1" || menuInput == "2" || menuInput == "3" || menuInput == "4")
 			break
 		end
 	end
@@ -83,6 +85,76 @@ while true
 			STDIN.getch 
 
 		# Two-player chess game loop
+
+		when "1"
+
+			mainBoard = Board.new("std", true)
+			mainBoard.printBoard
+
+			while true
+
+				if mainBoard.gameOver
+				  if mainBoard.inCheck
+						puts("Checkmate")
+					else
+						puts("Stalemate")
+					end
+					STDIN.getch 
+					break
+				else
+
+					if mainBoard.playerTurn
+
+						moveTree = deep_thought(mainBoard)
+
+						evaluationTree = tree_evaluator(moveTree)
+
+						bestMoves = moveSelector(evaluationTree)
+
+						theMoveIndex = bestMoves.sample
+
+						theMove = mainBoard.finalList[theMoveIndex]
+
+						mainBoard.move(theMove)
+
+						mainBoard.printBoard
+
+					else
+						while true
+
+							print("Enter Move: ")
+							userMove = gets.chomp
+
+							if userMove.downcase == "exit"
+								"a" + 2
+							end
+
+							if isValidSyntax(userMove)
+								rawMove = inputConverter(userMove, "nil")
+								if pieceType(mainBoard.data[rawMove / 1000]) == "pawn" && (rawMove - (rawMove / 10) * 10 == 8 || rawMove - (rawMove / 10) * 10 == 1)
+									while true
+										print("Promote to: ")
+										promotion = gets.chomp
+										if promotion.downcase == "n" || promotion.downcase == "b" || promotion.downcase == "r" || promotion.downcase == "q"
+											promotion = promotion.downcase
+											break
+										else
+											puts("Invalid Syntax")
+										end
+									end
+									rawMove = inputConverter(userMove, promotion)
+								end
+								puts("#{rawMove}")
+								mainBoard.move(rawMove)
+								mainBoard.printBoard
+								break
+							else
+								puts("Invalid Syntax")
+							end
+						end
+					end
+				end
+			end
 
 		when "2"
 
@@ -112,7 +184,7 @@ while true
 
 						if isValidSyntax(userMove)
 							rawMove = inputConverter(userMove, "nil")
-							if pieceType(mainBoard.data[rawMove / 1000]) == "pawn" && rawMove - (rawMove / 10) * 10 == 8
+							if pieceType(mainBoard.data[rawMove / 1000]) == "pawn" && (rawMove - (rawMove / 10) * 10 == 8 || rawMove - (rawMove / 10) * 10 == 1)
 								while true
 									print("Promote to: ")
 									promotion = gets.chomp
@@ -134,7 +206,6 @@ while true
 						end
 					end
 				end
-			
 			end
 	end
 
