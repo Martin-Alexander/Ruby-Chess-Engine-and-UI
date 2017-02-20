@@ -27,6 +27,16 @@ class Board
     # assemble which board squares will recieve a piece (as oppsed to being empty)
     # and the second arrays gives the pieces to place in that square. 
 
+    # Testing environment with new "destroyer" piece
+
+    destroyerSquares = [11, 21, 31, 41, 51, 61, 71, 81, 12, 22, 32, 42, 52, 62, 72, 82, 17, 27, 37, 47, 57, 67, 77, 87, 18, 28, 38, 48, 58, 68, 78, 88]
+    destroyerPieces = [140, 120, 130, 170, 160, 130, 120, 140, 110, 110, 110, 110, 110, 110, 110, 110, 210, 210, 210, 210, 210, 210, 210, 210, 240, 220, 230, 270, 260, 230, 220, 240]
+
+    # Testing environment designed to test the castling feature
+
+    castlingSquares = [11, 51, 81, 12, 22, 32, 42, 52, 62, 72, 82, 17, 27, 37, 47, 57, 67, 77, 87, 18, 28, 38, 48, 58, 68, 78, 88]
+    castlingPieces = [140, 160, 140, 110, 110, 110, 110, 110, 110, 110, 110, 210, 210, 210, 210, 210, 210, 210, 210, 240, 220, 230, 270, 260, 230, 220, 240]
+
     # A testing environment based on the Immoratal Game
 
     immortalSquares = [18, 28, 38, 58, 68, 78, 88, 17, 37, 47, 67, 77, 87, 25, 64, 84, 34, 54, 12, 26, 32, 42, 72, 82, 11, 21, 31, 41, 61, 71, 81] 
@@ -209,12 +219,14 @@ class Board
         when 24 then overlay[k] = "r"
         when 25 then overlay[k] = "q"
         when 26 then overlay[k] = "k"
+        when 27 then overlay[k] = "x"
         when 11 then overlay[k] = "P" 
         when 12 then overlay[k] = "N"
         when 13 then overlay[k] = "B"
         when 14 then overlay[k] = "R"
         when 15 then overlay[k] = "Q" 
         when 16 then overlay[k] = "K" 
+        when 17 then overlay[k] = "X"
       end
     end
 
@@ -222,7 +234,7 @@ class Board
     # to the console
     puts("\e[H\e[2J")
     puts("")
-    puts("               -- C H E S S --                 ")
+    puts("              -- C H E S S --                 ")
     puts("")
     puts("")
     puts("       A   B   C   D   E   F   G   H")
@@ -321,6 +333,18 @@ class Board
         movingAlong(8 - position/10, position, 10, output, board)
         movingAlong(position/10 - 1, position, -10, output, board)     
 
+      when "destroyer"
+
+        if player(piece) == "white"
+          board.each do |i, j|
+            if player(j) == "black" && pieceType(j) != "king" && pieceType(j) != "destroyer" then output.push(position * 1000 + i) end
+          end
+        else
+          board.each do |i, j|
+            if player(j) == "white" && pieceType(j) != "king" && pieceType(j) != "destroyer" then output.push(position * 1000 + i) end
+          end          
+        end
+
       when "king"
         kingMoves = [1, 11, 10, 9, -1, -11, -10, -9]
         if player(piece) == "white"                                                                                                   
@@ -329,8 +353,11 @@ class Board
               output.push(position + i + (position * 1000))
             end
           end
-          if specialStatus(piece) == "none"               
-
+          if specialStatus(piece) == "none" && pieceType(board[61]) == "empty" && pieceType(board[71]) == "empty" && board[81] == 140
+            output.push(51071)
+          end
+          if specialStatus(piece) == "none" && pieceType(board[41]) == "empty" && pieceType(board[31]) == "empty" && pieceType(board[21]) == "empty" && board[11] == 140
+            output.push(51031)
           end                                                                                    
         else                                                                                                 
           kingMoves.each do |i|            
@@ -338,6 +365,12 @@ class Board
               output.push(position + i + (position * 1000))
             end
           end                                                                                                   
+          if specialStatus(piece) == "none" && pieceType(board[68]) == "empty" && pieceType(board[78]) == "empty" && board[88] == 240
+            output.push(58078)
+          end
+          if specialStatus(piece) == "none" && pieceType(board[48]) == "empty" && pieceType(board[38]) == "empty" && pieceType(board[28]) == "empty" && board[18] == 240
+            output.push(58038)
+          end    
         end
     end
   end
@@ -509,9 +542,14 @@ class Board
               @data[move - ((move/100) * 100)] = 150
             else
               @data[move - ((move/100) * 100)] = 250
-            end             
-          end
+            end
+        end
       end
+
+      if move == 51071 then movePiece(81061, @data) end
+      if move == 51031 then movePiece(11041, @data) end
+      if move == 58078 then movePiece(88068, @data) end
+      if move == 58038 then movePiece(18048, @data) end 
 
       # Fouth, if the move involves a pawn, rook, or king edit the board 
       # such that the piece has its special status updated (if it has not
@@ -592,9 +630,15 @@ class Board
           end
         when "queen"
           if player(j) == "white"
-            evaluation = evaluation + 8
+            evaluation = evaluation + 9
           else
-            evaluation = evaluation - 8
+            evaluation = evaluation - 9
+          end
+        when "destroyer"
+          if player(j) == "white"
+            evaluation = evaluation + 800
+          else
+            evaluation = evaluation - 800
           end
       end
     end
@@ -632,6 +676,7 @@ class Board
         when 4 then return("rook")
         when 5 then return("queen")
         when 6 then return("king") 
+        when 7 then return("destroyer")
       end  
     end
   end
