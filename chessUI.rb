@@ -50,6 +50,59 @@ def inputConverter(move, promotion)
  	return((move[0].ord - 96) * 10000 + (move[1].to_i) * 1000 + promotion * 100 + (move[3].ord - 96) * 10 + (move[4].to_i))
 end
 
+def playerTurn (board)
+
+	while true
+
+		print("Enter Move: ")
+		userMove = gets.chomp
+
+		if userMove.downcase == "exit"
+			"a" + 2
+		end
+
+		if isValidSyntax(userMove)
+			rawMove = inputConverter(userMove, "nil")
+			if pieceType(board.data[rawMove / 1000]) == "pawn" && (rawMove - (rawMove / 10) * 10 == 8 || rawMove - (rawMove / 10) * 10 == 1)
+				while true
+					print("Promote to: ")
+					promotion = gets.chomp
+					if promotion.downcase == "n" || promotion.downcase == "b" || promotion.downcase == "r" || promotion.downcase == "q"
+						promotion = promotion.downcase
+						break
+					else
+						puts("Invalid Syntax")
+					end
+				end
+				rawMove = inputConverter(userMove, promotion)
+			end
+			puts("#{rawMove}")
+			board.move(rawMove)
+			board.printBoard
+			break
+		else
+			puts("Invalid Syntax")
+		end
+	end
+end
+
+def computerTurn(computerIsWhite, board)
+
+	moveTree = deep_thought(board, computerIsWhite)
+
+	evaluationTree = tree_evaluator(moveTree)
+
+	bestMoves = moveSelector(evaluationTree)
+
+	theMoveIndex = bestMoves.sample
+
+	theMove = board.finalList[theMoveIndex]
+
+	board.move(theMove)
+
+	board.printBoard
+end
+
 # Program loop
 
 while true
@@ -84,9 +137,21 @@ while true
 
 			STDIN.getch 
 
-		# Two-player chess game loop
+		# One-player chess game loop
 
 		when "1"
+			while true
+				puts("Play as white [w] or black [b]?")
+				humanColour = gets.chomp
+
+				if humanColour.downcase == "b"
+					computerIsWhite = true
+					break
+				elsif humanColour.downcase == "w"
+					computerIsWhite = false
+					break
+				end
+			end
 
 			mainBoard = Board.new("std", true)
 			mainBoard.printBoard
@@ -103,58 +168,19 @@ while true
 					break
 				else
 
-					if mainBoard.playerTurn
+					if computerIsWhite == mainBoard.playerTurn
 
-						moveTree = deep_thought(mainBoard)
-
-						evaluationTree = tree_evaluator(moveTree)
-
-						bestMoves = moveSelector(evaluationTree)
-
-						theMoveIndex = bestMoves.sample
-
-						theMove = mainBoard.finalList[theMoveIndex]
-
-						mainBoard.move(theMove)
-
-						mainBoard.printBoard
+						computerTurn(computerIsWhite, mainBoard)
 
 					else
-						while true
 
-							print("Enter Move: ")
-							userMove = gets.chomp
+						playerTurn(mainBoard)
 
-							if userMove.downcase == "exit"
-								"a" + 2
-							end
-
-							if isValidSyntax(userMove)
-								rawMove = inputConverter(userMove, "nil")
-								if pieceType(mainBoard.data[rawMove / 1000]) == "pawn" && (rawMove - (rawMove / 10) * 10 == 8 || rawMove - (rawMove / 10) * 10 == 1)
-									while true
-										print("Promote to: ")
-										promotion = gets.chomp
-										if promotion.downcase == "n" || promotion.downcase == "b" || promotion.downcase == "r" || promotion.downcase == "q"
-											promotion = promotion.downcase
-											break
-										else
-											puts("Invalid Syntax")
-										end
-									end
-									rawMove = inputConverter(userMove, promotion)
-								end
-								puts("#{rawMove}")
-								mainBoard.move(rawMove)
-								mainBoard.printBoard
-								break
-							else
-								puts("Invalid Syntax")
-							end
-						end
 					end
 				end
 			end
+
+		# Two-player chess game loop
 
 		when "2"
 
@@ -173,38 +199,8 @@ while true
 					break
 				else
 
-					while true
+					playerTurn(mainBoard)
 
-						print("Enter Move: ")
-						userMove = gets.chomp
-
-						if userMove.downcase == "exit"
-							"a" + 2
-						end
-
-						if isValidSyntax(userMove)
-							rawMove = inputConverter(userMove, "nil")
-							if pieceType(mainBoard.data[rawMove / 1000]) == "pawn" && (rawMove - (rawMove / 10) * 10 == 8 || rawMove - (rawMove / 10) * 10 == 1)
-								while true
-									print("Promote to: ")
-									promotion = gets.chomp
-									if promotion.downcase == "n" || promotion.downcase == "b" || promotion.downcase == "r" || promotion.downcase == "q"
-										promotion = promotion.downcase
-										break
-									else
-										puts("Invalid Syntax")
-									end
-								end
-								rawMove = inputConverter(userMove, promotion)
-							end
-							puts("#{rawMove}")
-							mainBoard.move(rawMove)
-							mainBoard.printBoard
-							break
-						else
-							puts("Invalid Syntax")
-						end
-					end
 				end
 			end
 	end

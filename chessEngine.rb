@@ -1,6 +1,6 @@
 require './chessBoard'
 
-def deep_thought (board)
+def deep_thought (board, white_to_play)
   tree = []
   for i in 0...board.finalList.length
     print "\r#{((i.to_f/board.finalList.length.to_f) * 100).round(2).to_i}\% complete"
@@ -37,7 +37,7 @@ def deep_thought (board)
                 branch_2.push(0)
               end
             end
-            branch_2.push(thirdLevel.evaluate_board)
+            if white_to_play then branch_2.push(thirdLevel.evaluate_board) else branch_2.push(thirdLevel.evaluate_board * -1) end
           end
         end
       end
