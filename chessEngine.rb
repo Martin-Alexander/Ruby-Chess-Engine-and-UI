@@ -3,7 +3,7 @@ require './chessBoard'
 def deep_thought (board, white_to_play)
   tree = []
   for i in 0...board.finalList.length
-    print "\r#{((i.to_f/board.finalList.length.to_f) * 100).round(2).to_i}\% complete"
+    print "\r Thinking... #{((i.to_f/board.finalList.length.to_f) * 100).round(2).to_i}\% complete"
     branch_1 = []
     firstLevel = Board.new(board.data, board.playerTurn)
     firstLevel.move(board.finalList[i])

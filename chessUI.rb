@@ -112,10 +112,10 @@ while true
 	while true
 		puts("\e[H\e[2J")
 		puts("\e[1\e[1H")
-		puts("1 players [1]")
-		puts("2 players [2]")
-		puts("instructions [3]")
-		puts("exit [4]")
+		puts(" 1 players [1]")
+		puts(" 2 players [2]")
+		puts(" instructions [3]")
+		puts(" exit [4]")
 
 		menuInput = gets.chomp
 
@@ -133,7 +133,7 @@ while true
 		when "3"
 
 			puts("\e[1\e[1H")
-			puts("These are the instruction")
+			puts(" These are the instruction")
 
 			STDIN.getch 
 
@@ -141,7 +141,7 @@ while true
 
 		when "1"
 			while true
-				puts("Play as white [w] or black [b]?")
+				puts(" Play as white [w] or black [b]?")
 				humanColour = gets.chomp
 
 				if humanColour.downcase == "b"
@@ -160,9 +160,9 @@ while true
 
 				if mainBoard.gameOver
 				  if mainBoard.inCheck
-						puts("Checkmate")
+						puts(" Checkmate")
 					else
-						puts("Stalemate")
+						puts(" Stalemate")
 					end
 					STDIN.getch 
 					break
@@ -191,9 +191,9 @@ while true
 
 				if mainBoard.gameOver
 				  if mainBoard.inCheck
-						puts("Checkmate")
+						puts(" Checkmate")
 					else
-						puts("Stalemate")
+						puts(" Stalemate")
 					end
 					STDIN.getch 
 					break
