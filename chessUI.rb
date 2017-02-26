@@ -1,5 +1,6 @@
 require './chessBoard'
 require './chessEngine'
+require 'time'
 require 'io/console'   
 
 def isValidSyntax(move)
@@ -54,34 +55,56 @@ def playerTurn (board)
 
 	while true
 
-		print("Enter Move: ")
+		puts("\e[1\e[25H")
+		puts("                           ")
+		puts("\e[1\e[25H")
+		print("   Enter Move: ")
 		userMove = gets.chomp
 
-		if userMove.downcase == "exit"
-			"a" + 2
-		end
-
-		if isValidSyntax(userMove)
+		if userMove.downcase == "menu"
+			return(inGameMenu(board))
+		elsif isValidSyntax(userMove)
 			rawMove = inputConverter(userMove, "nil")
 			if pieceType(board.data[rawMove / 1000]) == "pawn" && (rawMove - (rawMove / 10) * 10 == 8 || rawMove - (rawMove / 10) * 10 == 1)
 				while true
-					print("Promote to: ")
+					print("   Promote to: ")
 					promotion = gets.chomp
 					if promotion.downcase == "n" || promotion.downcase == "b" || promotion.downcase == "r" || promotion.downcase == "q"
 						promotion = promotion.downcase
 						break
 					else
-						puts("Invalid Syntax")
+						startTime = Time.new
+						puts("\e[1\e[25H")
+						puts("                           ")
+						puts("\e[1\e[25H")
+						print("\r   ERROR: Invalid Syntax")
+						while Time.new - startTime < 1.4
+						end
 					end
 				end
 				rawMove = inputConverter(userMove, promotion)
 			end
-			puts("#{rawMove}")
-			board.move(rawMove)
-			board.printBoard
-			break
+			if board.finalList.include? rawMove
+				board.move(rawMove)
+				board.printBoard
+				break
+			else 
+				startTime = Time.new
+				puts("\e[1\e[25H")
+				puts("                         ")
+				puts("\e[1\e[25H")
+				print("\r   ERROR: Invalid Move")
+				while Time.new - startTime < 1.4
+				end
+			end
 		else
-			puts("Invalid Syntax")
+			startTime = Time.new
+			puts("\e[1\e[25H")
+			puts("                           ")
+			puts("\e[1\e[25H")
+			print("\r   ERROR: Invalid Syntax")
+			while Time.new - startTime < 1.4
+			end
 		end
 	end
 end
@@ -103,26 +126,96 @@ def computerTurn(computerIsWhite, board)
 	board.printBoard
 end
 
+def inGameMenu(board)
+	while true
+    puts("\e[H\e[2J")
+    puts("")
+    puts("              -- C H E S S --                 ")
+    puts("")
+		puts("")
+		puts("        +----------------------+")
+		puts("        |                      |")		
+		puts("        |         MENU         |")
+		puts("        |                      |")
+		puts("        +----------------------+")
+		puts("")		
+		puts("            Back........[1]     ")
+		puts("            New Game....[2]")
+		puts("            Exit Game...[3]")
+		puts("")
+		print("             Input: ")
+		inGameMenuInput = gets.chomp
+
+		if ["1", "2", "3"].include? inGameMenuInput
+			break
+		else
+			startTime = Time.new
+			puts("\e[1\e[15H")
+			puts("                                             ")
+			puts("\e[1\e[15H")
+			print("\r             ERROR: Invalid Input")
+			while Time.new - startTime < 1.4
+			end
+		end
+	end
+
+		if inGameMenuInput == "1"
+			board.printBoard			
+			return("back")
+		elsif inGameMenuInput == "2"
+			return("new")
+		else
+			return("exit")
+		end
+
+end
+
 # Program loop
 
+specialOutput = nil
+
 while true
+	if specialOutput == "exit" then break end
 
 	# Main menu loop
 
 	while true
 		puts("\e[H\e[2J")
 		puts("\e[1\e[1H")
-		puts(" 1 players [1]")
-		puts(" 2 players [2]")
-		puts(" instructions [3]")
-		puts(" exit [4]")
+		puts("")
+		puts("   +-----------------------------------------------+")
+		puts("   ¦          _____ _                              ¦")
+		puts("   ¦	     / ____| |                             ¦")
+		puts("   ¦	    | |    | |__   ___  ___ ___            ¦")
+		puts("   ¦	    | |    | '_ \\ / _ \\/ __/ __|           ¦")
+		puts("   ¦	    | |____| | | |  __/\\__ \\__ \\           ¦")
+		puts("   ¦	     \\_____|_| |_|\\___||___/___/           ¦")
+		puts("   ¦                                               ¦")
+		puts("   ¦                                               ¦")	
+		puts("   ¦            By Martin Giannakopoulos           ¦")
+    puts("   ¦                                               ¦")
+	  puts("   +-----------------------------------------------+")
+	  puts("")
+		puts("            Play Against Computer...[1]")
+		puts("            Two Players.............[2]")
+		puts("            Instructions............[3]")
+		puts("            Exit....................[4]")
+		puts("")
+	  print("            Input: ")
 
 		menuInput = gets.chomp
 
-		puts("\e[H\e[2J")
-
 		if (menuInput == "1" || menuInput == "2" || menuInput == "3" || menuInput == "4")
+			puts("\e[H\e[2J")			
 			break
+		else
+			startTime = Time.new
+			puts("\e[1\e[20H")
+			puts("                                             ")
+			puts("\e[1\e[20H")
+			print("\r            ERROR: Invalid Input")
+			while Time.new - startTime < 1.4
+			end
 		end
 	end
 
@@ -133,15 +226,46 @@ while true
 		when "3"
 
 			puts("\e[1\e[1H")
-			puts(" These are the instruction")
-
-			STDIN.getch 
+			puts("")
+			puts("   Entering moves:")
+			puts("")
+			puts("   Move inputs must contain two pieces of information:")
+			puts("   The square on which the piece you want to move is and")
+			puts("   the square to which you want that piece to move. So,")
+			puts("   if you want to advance your pawn on the e2 square to")
+			puts("   the e4 square you would enter the following:")
+			puts("")
+			puts("   e2 e4")
+			puts("")
+			puts("   For the input syntax to be valid the first two")
+			puts("   characters must correspond to a square on the board,")
+			puts("   the third character must be a blank space, and the")
+			puts("   fouth and fifth characters must correspond to another")
+			puts("   square on the board. The input is NOT case sensitive,")
+			puts("   so 'E2 E4' is also valid syntax.")
+			puts("")
+			puts("")
+			puts("   Accessing in-game menu:")
+			puts("")			
+			puts("   When prompted to enter a move the in-game menu can be")
+			puts("   accessed by entering the word 'menu'. When playing")
+			puts("   against the computer this option is not available")
+			puts("   while the engine is 'thinking'.")
+			puts("")
+			puts("")
+			print("   Press Enter to return to main menu")
+			gets
 
 		# One-player chess game loop
 
 		when "1"
 			while true
-				puts(" Play as white [w] or black [b]?")
+				puts("")
+				puts("   PLAY AGAINST COMPUTER")
+				puts("")
+				puts("   Play as white [w] or as black [b]")
+				puts("")				
+				print("   Input: ")
 				humanColour = gets.chomp
 
 				if humanColour.downcase == "b"
@@ -160,24 +284,25 @@ while true
 
 				if mainBoard.gameOver
 				  if mainBoard.inCheck
-						puts(" Checkmate")
+						puts("  Checkmate")
 					else
-						puts(" Stalemate")
+						puts("  Stalemate")
 					end
-					STDIN.getch 
+						print("   Press Enter to return to main menu")
+						gets
 					break
 				else
-
 					if computerIsWhite == mainBoard.playerTurn
-
 						computerTurn(computerIsWhite, mainBoard)
-
 					else
-
-						playerTurn(mainBoard)
-
+						specialOutput = playerTurn(mainBoard)
 					end
 				end
+
+				if specialOutput == "new" || specialOutput == "exit"
+					break
+				end
+
 			end
 
 		# Two-player chess game loop
@@ -198,15 +323,17 @@ while true
 					STDIN.getch 
 					break
 				else
-
-					playerTurn(mainBoard)
-
+					specialOutput = playerTurn(mainBoard)
 				end
-			end
-	end
 
-	if menuInput == "4"
-		break
+				if specialOutput == "new" || specialOutput == "exit"
+					break
+				end
+
+			end
+
+		when "4"
+			break
 	end
 
 end
