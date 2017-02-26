@@ -18,19 +18,19 @@ def isValidSyntax(move)
 end
 
 def pieceType(piece)
-  if piece == nil
-    return("NaS")
-  else
-    case ((piece - ((piece / 100) * 100)) / 10)
-      when 0 then return("empty") 
-      when 1 then return("pawn")
-      when 2 then return("knight")
-      when 3 then return("bishop")
-      when 4 then return("rook")
-      when 5 then return("queen")
-      when 6 then return("king") 
-    end  
-  end
+	if piece == nil
+		return("NaS")
+	else
+		case ((piece - ((piece / 100) * 100)) / 10)
+			when 0 then return("empty") 
+			when 1 then return("pawn")
+			when 2 then return("knight")
+			when 3 then return("bishop")
+			when 4 then return("rook")
+			when 5 then return("queen")
+			when 6 then return("king") 
+		end  
+	end
 end
 
 def inputConverter(move, promotion)
@@ -48,19 +48,16 @@ def inputConverter(move, promotion)
 		else
 			promotion = 0
 	end
- 	return((move[0].ord - 96) * 10000 + (move[1].to_i) * 1000 + promotion * 100 + (move[3].ord - 96) * 10 + (move[4].to_i))
+	return((move[0].ord - 96) * 10000 + (move[1].to_i) * 1000 + promotion * 100 + (move[3].ord - 96) * 10 + (move[4].to_i))
 end
 
 def playerTurn (board)
-
 	while true
-
 		puts("\e[1\e[25H")
 		puts("                           ")
 		puts("\e[1\e[25H")
 		print("   Enter Move: ")
 		userMove = gets.chomp
-
 		if userMove.downcase == "menu"
 			return(inGameMenu(board))
 		elsif isValidSyntax(userMove)
@@ -110,28 +107,21 @@ def playerTurn (board)
 end
 
 def computerTurn(computerIsWhite, board)
-
 	moveTree = deep_thought(board, computerIsWhite)
-
 	evaluationTree = tree_evaluator(moveTree)
-
 	bestMoves = moveSelector(evaluationTree)
-
 	theMoveIndex = bestMoves.sample
-
 	theMove = board.finalList[theMoveIndex]
-
 	board.move(theMove)
-
 	board.printBoard
 end
 
 def inGameMenu(board)
 	while true
-    puts("\e[H\e[2J")
-    puts("")
-    puts("              -- C H E S S --                 ")
-    puts("")
+		puts("\e[H\e[2J")
+		puts("")
+		puts("              -- C H E S S --                 ")
+		puts("")
 		puts("")
 		puts("        +----------------------+")
 		puts("        |                      |")		
@@ -145,7 +135,6 @@ def inGameMenu(board)
 		puts("")
 		print("             Input: ")
 		inGameMenuInput = gets.chomp
-
 		if ["1", "2", "3"].include? inGameMenuInput
 			break
 		else
@@ -158,7 +147,6 @@ def inGameMenu(board)
 			end
 		end
 	end
-
 		if inGameMenuInput == "1"
 			board.printBoard			
 			return("back")
@@ -167,13 +155,11 @@ def inGameMenu(board)
 		else
 			return("exit")
 		end
-
 end
 
 # Program loop
 
 specialOutput = nil
-
 while true
 	if specialOutput == "exit" then break end
 
@@ -193,18 +179,16 @@ while true
 		puts("   ¦                                               ¦")
 		puts("   ¦                                               ¦")	
 		puts("   ¦            By Martin Giannakopoulos           ¦")
-    puts("   ¦                                               ¦")
-	  puts("   +-----------------------------------------------+")
-	  puts("")
+		puts("   ¦                                               ¦")
+		puts("   +-----------------------------------------------+")
+		puts("")
 		puts("            Play Against Computer...[1]")
 		puts("            Two Players.............[2]")
 		puts("            Instructions............[3]")
 		puts("            Exit....................[4]")
 		puts("")
-	  print("            Input: ")
-
+		print("            Input: ")
 		menuInput = gets.chomp
-
 		if (menuInput == "1" || menuInput == "2" || menuInput == "3" || menuInput == "4")
 			puts("\e[H\e[2J")			
 			break
@@ -224,7 +208,6 @@ while true
 		# Game instructions
 
 		when "3"
-
 			puts("\e[1\e[1H")
 			puts("")
 			puts("   Entering moves:")
@@ -267,7 +250,6 @@ while true
 				puts("")				
 				print("   Input: ")
 				humanColour = gets.chomp
-
 				if humanColour.downcase == "b"
 					computerIsWhite = true
 					break
@@ -276,12 +258,9 @@ while true
 					break
 				end
 			end
-
 			mainBoard = Board.new("std", true)
 			mainBoard.printBoard
-
 			while true
-
 				if mainBoard.gameOver
 				  if mainBoard.inCheck
 						puts("  Checkmate")
@@ -302,18 +281,14 @@ while true
 				if specialOutput == "new" || specialOutput == "exit"
 					break
 				end
-
 			end
 
 		# Two-player chess game loop
 
 		when "2"
-
 			mainBoard = Board.new("std", true)
 			mainBoard.printBoard
-
 			while true
-
 				if mainBoard.gameOver
 				  if mainBoard.inCheck
 						puts(" Checkmate")
@@ -325,15 +300,11 @@ while true
 				else
 					specialOutput = playerTurn(mainBoard)
 				end
-
 				if specialOutput == "new" || specialOutput == "exit"
 					break
 				end
-
 			end
-
 		when "4"
 			break
 	end
-
 end
