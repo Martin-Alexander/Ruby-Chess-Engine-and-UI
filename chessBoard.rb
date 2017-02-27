@@ -27,6 +27,11 @@ class Board
     # assemble which board squares will recieve a piece (as oppsed to being empty)
     # and the second arrays gives the pieces to place in that square. 
 
+    # A demo environment 
+
+    demoSquares = [18, 27, 37, 86, 55, 33, 63, 73, 12, 62, 82, 51, 81]
+    demoPieces = [261, 210, 210, 230, 150, 220, 111, 111, 211, 130, 110, 160, 140]
+
     # Testing environment with new "destroyer" piece
 
     destroyerSquares = [11, 21, 31, 41, 51, 61, 71, 81, 12, 22, 32, 42, 52, 62, 72, 82, 17, 27, 37, 47, 57, 67, 77, 87, 18, 28, 38, 48, 58, 68, 78, 88]
@@ -210,23 +215,26 @@ class Board
     # value of the corresponding key of the board data hash to the new hash. This creates
     # a chess board with visual representations instead of raw data in each board square. 
 
+    whitePieceColour = "\e[37;1m"
+    blackPieceColour = "\e[31;1m"
+
     @data.each do |k, l|
       case (l / 10)
         when 0 then overlay[k] = " "
-        when 21 then overlay[k] = "p"
-        when 22 then overlay[k] = "n"
-        when 23 then overlay[k] = "b"
-        when 24 then overlay[k] = "r"
-        when 25 then overlay[k] = "q"
-        when 26 then overlay[k] = "k"
-        when 27 then overlay[k] = "x"
-        when 11 then overlay[k] = "P" 
-        when 12 then overlay[k] = "N"
-        when 13 then overlay[k] = "B"
-        when 14 then overlay[k] = "R"
-        when 15 then overlay[k] = "Q" 
-        when 16 then overlay[k] = "K" 
-        when 17 then overlay[k] = "X"
+        when 21 then overlay[k] = "#{blackPieceColour}P\e[0m"
+        when 22 then overlay[k] = "#{blackPieceColour}N\e[0m"
+        when 23 then overlay[k] = "#{blackPieceColour}B\e[0m"
+        when 24 then overlay[k] = "#{blackPieceColour}R\e[0m"
+        when 25 then overlay[k] = "#{blackPieceColour}Q\e[0m"
+        when 26 then overlay[k] = "#{blackPieceColour}K\e[0m"
+        when 27 then overlay[k] = "#{blackPieceColour}X\e[0m"
+        when 11 then overlay[k] = "#{whitePieceColour}P\e[0m" 
+        when 12 then overlay[k] = "#{whitePieceColour}N\e[0m"
+        when 13 then overlay[k] = "#{whitePieceColour}B\e[0m"
+        when 14 then overlay[k] = "#{whitePieceColour}R\e[0m"
+        when 15 then overlay[k] = "#{whitePieceColour}Q\e[0m" 
+        when 16 then overlay[k] = "#{whitePieceColour}K\e[0m" 
+        when 17 then overlay[k] = "#{whitePieceColour}X\e[0m"
       end
     end
 
