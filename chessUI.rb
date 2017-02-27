@@ -53,10 +53,15 @@ end
 
 def playerTurn (board)
 	while true
-		puts("\e[1\e[25H")
-		puts("                           ")
-		puts("\e[1\e[25H")
-		print("   Enter Move: ")
+		board.printBoard
+		puts("\e[25H")
+		puts("                                                                  ")
+		puts("\e[25H")
+		if board.playerTurn
+			print("   White to Play, Enter Move: ")
+		else
+			print("   Black to play, Enter Move: ")
+		end
 		userMove = gets.chomp
 		if userMove.downcase == "menu"
 			return(inGameMenu(board))
@@ -64,6 +69,10 @@ def playerTurn (board)
 			rawMove = inputConverter(userMove, "nil")
 			if pieceType(board.data[rawMove / 1000]) == "pawn" && (rawMove - (rawMove / 10) * 10 == 8 || rawMove - (rawMove / 10) * 10 == 1)
 				while true
+					board.printBoard
+					puts("\e[25H")
+					puts("                                                                  ")
+					puts("\e[25H")
 					print("   Promote to: ")
 					promotion = gets.chomp
 					if promotion.downcase == "n" || promotion.downcase == "b" || promotion.downcase == "r" || promotion.downcase == "q"
@@ -71,10 +80,11 @@ def playerTurn (board)
 						break
 					else
 						startTime = Time.new
-						puts("\e[1\e[25H")
-						puts("                           ")
-						puts("\e[1\e[25H")
-						print("\r   ERROR: Invalid Syntax")
+						board.printBoard
+						puts("\e[25H")
+						puts("                                                                 ")
+						puts("\e[25H")
+						print("\r   ERROR: Invalid Input")
 						while Time.new - startTime < 1.4
 						end
 					end
@@ -87,18 +97,20 @@ def playerTurn (board)
 				break
 			else 
 				startTime = Time.new
-				puts("\e[1\e[25H")
-				puts("                         ")
-				puts("\e[1\e[25H")
+				board.printBoard
+				puts("\e[25H")
+				puts("                                                          ")
+				puts("\e[25H")
 				print("\r   ERROR: Invalid Move")
 				while Time.new - startTime < 1.4
 				end
 			end
 		else
 			startTime = Time.new
-			puts("\e[1\e[25H")
-			puts("                           ")
-			puts("\e[1\e[25H")
+			board.printBoard
+			puts("\e[25H")
+			puts("                                                           ")
+			puts("\e[25H")
 			print("\r   ERROR: Invalid Syntax")
 			while Time.new - startTime < 1.4
 			end
@@ -139,9 +151,9 @@ def inGameMenu(board)
 			break
 		else
 			startTime = Time.new
-			puts("\e[1\e[15H")
+			puts("\e[15H")
 			puts("                                             ")
-			puts("\e[1\e[15H")
+			puts("\e[15H")
 			print("\r             ERROR: Invalid Input")
 			while Time.new - startTime < 1.4
 			end
@@ -167,7 +179,6 @@ while true
 
 	while true
 		puts("\e[H\e[2J")
-		puts("\e[1\e[1H")
 		puts("")
 		puts("   +-----------------------------------------------+")
 		puts("   ¦          _____ _                              ¦")
@@ -178,7 +189,7 @@ while true
 		puts("   ¦	     \\_____|_| |_|\\___||___/___/           ¦")
 		puts("   ¦                                               ¦")
 		puts("   ¦                                               ¦")	
-		puts("   ¦            By Martin Giannakopoulos           ¦")
+		puts("   ¦                                               ¦")
 		puts("   ¦                                               ¦")
 		puts("   +-----------------------------------------------+")
 		puts("")
@@ -194,9 +205,9 @@ while true
 			break
 		else
 			startTime = Time.new
-			puts("\e[1\e[20H")
+			puts("\e[20H")
 			puts("                                             ")
-			puts("\e[1\e[20H")
+			puts("\e[20H")
 			print("\r            ERROR: Invalid Input")
 			while Time.new - startTime < 1.4
 			end
@@ -208,7 +219,7 @@ while true
 		# Game instructions
 
 		when "3"
-			puts("\e[1\e[1H")
+			puts("\e[1H")
 			puts("")
 			puts("   Entering moves:")
 			puts("")
@@ -246,7 +257,7 @@ while true
 				puts("")
 				puts("   PLAY AGAINST COMPUTER")
 				puts("")
-				puts("   Play as white [w] or as black [b]")
+				puts("   Would you like to play as white [w] or as black [b]?")
 				puts("")				
 				print("   Input: ")
 				humanColour = gets.chomp
@@ -259,17 +270,19 @@ while true
 				end
 			end
 			mainBoard = Board.new("std", true)
-			mainBoard.printBoard
 			while true
 				if mainBoard.gameOver
 				  if mainBoard.inCheck
-						puts("  Checkmate")
-					else
-						puts("  Stalemate")
-					end
-						print("   Press Enter to return to main menu")
-						gets
-					break
+				    print("   Checkmate!")
+				  else
+				    print("   Stalemate")
+				  end
+				  startTime = Time.new
+		      		  while Time.new - startTime < 0.7
+				  end
+				  print("\n\n   Press Enter to return to main menu")
+				  gets
+				  break
 				else
 					if computerIsWhite == mainBoard.playerTurn
 						computerTurn(computerIsWhite, mainBoard)
@@ -287,15 +300,18 @@ while true
 
 		when "2"
 			mainBoard = Board.new("std", true)
-			mainBoard.printBoard
 			while true
 				if mainBoard.gameOver
 				  if mainBoard.inCheck
-						puts(" Checkmate")
+						print("   Checkmate!")
 					else
-						puts(" Stalemate")
+						print("   Stalemate")
 					end
-					STDIN.getch 
+				 	startTime = Time.new
+		      		  	while Time.new - startTime < 0.7
+				  	end
+				  	print("\n\n   Press Enter to return to main menu")
+				  	gets
 					break
 				else
 					specialOutput = playerTurn(mainBoard)
